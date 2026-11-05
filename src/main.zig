@@ -17,6 +17,9 @@ const HELP_TEXT =
     \\  --help Show this help
 ;
 
+const Errors = struct {
+    pub const UNKNOWN_ARG = "Unknown argument. Try '--help'";
+};
 pub fn main(init: process.Init.Minimal) !void {
     var threaded: Io.Threaded = .init(.failing, .{});
     const io = threaded.io();
@@ -36,12 +39,20 @@ pub fn main(init: process.Init.Minimal) !void {
         var stdout_writer = File.stdout().writerStreaming(io, &buffer);
         break :block &stdout_writer.interface;
     };
+    const stderr_writer = block: {
+        // Unbuffered
+        var stderr_writer = File.stdout().writerStreaming(io, &.{});
+        break :block &stderr_writer.interface;
+    };
 
     if (args_iter.next()) |arg| {
         if (mem.eql(u8, arg, "--help")) {
             _ = try stdout_writer.vtable.drain(stdout_writer, &.{HELP_TEXT}, 1);
             exit(.Success);
         }
+
+        _ = try stderr_writer.vtable.drain(stderr_writer, &.{Errors.UNKNOWN_ARG}, 1);
+        exit(.InvalidArgs);
     }
 }
 
