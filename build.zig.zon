@@ -1,0 +1,11 @@
+.{
+    .name = .tmd,
+    .version = "0.0.0",
+    .fingerprint = 0x3635a935e0ef0977, // Changing this has security and trust implications.
+    .minimum_zig_version = "0.17.1",
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}
