@@ -20,32 +20,34 @@ const HELP_TEXT =
 const Errors = struct {
     pub const UNKNOWN_ARG = "Unknown argument. Try '--help'";
 };
+
 pub fn main(init: process.Init.Minimal) !void {
-    var threaded: Io.Threaded = .init(.failing, .{});
+    var threaded: Io.Threaded = .init(undefined, .{});
     const io = threaded.io();
 
-    var args_iter = switch (OS) {
+    var args_iterator = switch (OS) {
+        // Allocator only for windows
         .windows => block: {
             const gpa = heap.smp_allocator;
             break :block try init.args.iterateAllocator(gpa);
         },
         else => init.args.iterate(),
     };
-    _ = args_iter.skip();
+    _ = args_iterator.skip();
 
     const stdout_writer = block: {
         var buffer: [1024]u8 = undefined;
 
-        var stdout_writer = File.stdout().writerStreaming(io, &buffer);
-        break :block &stdout_writer.interface;
+        var writer = File.stdout().writerStreaming(io, &buffer);
+        break :block &writer.interface;
     };
     const stderr_writer = block: {
         // Unbuffered
-        var stderr_writer = File.stdout().writerStreaming(io, &.{});
-        break :block &stderr_writer.interface;
+        var writer = File.stdout().writerStreaming(io, &.{});
+        break :block &writer.interface;
     };
 
-    if (args_iter.next()) |arg| {
+    if (args_iterator.next()) |arg| {
         if (mem.eql(u8, arg, "--help")) {
             _ = try stdout_writer.vtable.drain(stdout_writer, &.{HELP_TEXT}, 1);
             exit(.Success);
