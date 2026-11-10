@@ -10,7 +10,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    const exe = b.addExecutable(.{ .name = "tmd", .root_module = mod });
+    const exe = b.addExecutable(.{ .name = "pmd", .root_module = mod });
 
     b.installArtifact(exe);
 

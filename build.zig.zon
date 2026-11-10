@@ -1,5 +1,5 @@
 .{
-    .name = .tmd,
+    .name = .pmd,
     .version = "0.0.0",
     .fingerprint = 0x3635a935e0ef0977, // Changing this has security and trust implications.
     .minimum_zig_version = "0.17.1",
