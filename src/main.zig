@@ -64,11 +64,11 @@ pub fn main(init: process.Init.Minimal) !void {
 
     if (arg_iter.next()) |arg| {
         if (mem.eql(u8, arg, "--help")) {
-            _ = try stdout_writer.vtable.drain(stdout_writer, &.{HELP_TEXT}, 1);
+            try stdout_writer.writeAll(HELP_TEXT);
             exit(.Success);
         }
 
-        _ = try stderr_writer.vtable.drain(stderr_writer, &.{Errors.UNKNOWN_ARG}, 1);
+        try stderr_writer.writeAll(Errors.UNKNOWN_ARG);
         exit(.InvalidArgs);
     }
 }
