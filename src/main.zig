@@ -11,8 +11,8 @@ const OS = builtin.target.os.tag;
 const HELP_TEXT =
     \\Usage:
     \\  Read input from stdin
-    \\    tmd << file.md
-    \\    cat file.md | tmd
+    \\    pmd << file.md
+    \\    cat file.md | pmd
     \\
     \\  --help Show this help
     \\
@@ -23,12 +23,12 @@ const HELP_TEXT =
     \\  to be applied to their elements.
     \\
     \\  Example:
-    \\  PMD_HEADING=\e[1m
-    \\  PMD_CODE=\e[37;40m
-    \\  PMD_PARAGRAPH=...
-    \\  PMD_LINK=\e[4;34m
-    \\  PMD_STRONG=...
-    \\  PMD_ITALIC=...
+    \\    PMD_HEADING=\e[1m
+    \\    PMD_CODE=\e[37;40m
+    \\    PMD_PARAGRAPH=...
+    \\    PMD_LINK=\e[4;34m
+    \\    PMD_STRONG=...
+    \\    PMD_ITALIC=...
 ;
 
 const Errors = struct {
@@ -65,6 +65,7 @@ pub fn main(init: process.Init.Minimal) !void {
     if (arg_iter.next()) |arg| {
         if (mem.eql(u8, arg, "--help")) {
             try stdout_writer.writeAll(HELP_TEXT);
+            try stdout_writer.flush();
             exit(.Success);
         }
 
