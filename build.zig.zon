@@ -8,4 +8,10 @@
         "build.zig.zon",
         "src",
     },
+    .dependencies = .{
+        .md4zig = .{
+            .url = "https://github.com/fjebaker/md4zig/archive/master.tar.gz",
+            .hash = "md4zig-0.0.2-ZdZGbXJRAABMnRr7k2i2gZl-4dLTXBYhMyP4CWb0PQ5x",
+        },
+    },
 }
