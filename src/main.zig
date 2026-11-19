@@ -15,6 +15,20 @@ const HELP_TEXT =
     \\    cat file.md | tmd
     \\
     \\  --help Show this help
+    \\
+    \\Styles:
+    \\  Styles of Markdown elements can be changed
+    \\  via environment variables below.
+    \\  Variables contain ANSI escape sequences
+    \\  to be applied to their elements.
+    \\
+    \\  Example:
+    \\  PMD_HEADING=\e[1m
+    \\  PMD_CODE=\e[37;40m
+    \\  PMD_PARAGRAPH=...
+    \\  PMD_LINK=\e[4;34m
+    \\  PMD_STRONG=...
+    \\  PMD_ITALIC=...
 ;
 
 const Errors = struct {
@@ -22,10 +36,11 @@ const Errors = struct {
 };
 
 pub fn main(init: process.Init.Minimal) !void {
+    // `Io` functions with allocator aren't used here
     var threaded: Io.Threaded = .init(undefined, .{});
     const io = threaded.io();
 
-    var args_iterator = switch (OS) {
+    var arg_iter = switch (OS) {
         // Allocator only for windows
         .windows => block: {
             const gpa = heap.smp_allocator;
@@ -33,7 +48,7 @@ pub fn main(init: process.Init.Minimal) !void {
         },
         else => init.args.iterate(),
     };
-    _ = args_iterator.skip();
+    _ = arg_iter.skip();
 
     const stdout_writer = block: {
         var buffer: [1024]u8 = undefined;
@@ -47,7 +62,7 @@ pub fn main(init: process.Init.Minimal) !void {
         break :block &writer.interface;
     };
 
-    if (args_iterator.next()) |arg| {
+    if (arg_iter.next()) |arg| {
         if (mem.eql(u8, arg, "--help")) {
             _ = try stdout_writer.vtable.drain(stdout_writer, &.{HELP_TEXT}, 1);
             exit(.Success);
